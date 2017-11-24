@@ -83,7 +83,7 @@ public class MnistExample {
         bp.setLearningRate(0.01);
         bp.setInputTest(in_test);
         bp.setOutputTest(out_test);
-        bp.setTestFrecuency(2000);
+        //bp.setTestFrecuency(2000);
         bp.setClassification(true);
         bp.setLossFunction(LossFunction.CROSSENTROPY);
         
