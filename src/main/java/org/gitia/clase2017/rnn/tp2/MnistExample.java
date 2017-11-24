@@ -38,9 +38,6 @@ import org.gitia.jdataanalysis.data.stats.FilterConstantColumns;
 import org.gitia.jdataanalysis.data.stats.STD;
 
 /**
- * En este ensayo exploramos el comportamiento de los pesos de la red neuronal,
- * formamos un vector con los pesos de la capa, calculamos el tamaño del mismo,
- * y comparamos el tamaño final con el inicial para ver su "movimiento"
  *
  * @author Matías Roodschild <mroodschild@gmail.com>
  */
@@ -48,19 +45,11 @@ public class MnistExample {
 
     public static void main(String[] args) {
 
-        //================== Preparación de los datos ==========================
-        String dataInURL = "src/main/resources/handwrittennumbers/mnist_train_in_50000.csv";
-        String dataOutURL = "src/main/resources/handwrittennumbers/mnist_train_out_50000.csv";
+        SimpleMatrix input = CSV.open("src/main/resources/mnist/train_in.csv");
+        SimpleMatrix output = CSV.open("src/main/resources/mnist/train_out.csv");
+        SimpleMatrix in_test = CSV.open("src/main/resources/mnist/test_in.csv");
+        SimpleMatrix out_test = CSV.open("src/main/resources/mnist/test_out.csv");
 
-        String testInURL = "src/main/resources/handwrittennumbers/mnist_test_in.csv";
-        String testOutURL = "src/main/resources/handwrittennumbers/mnist_test_out.csv";
-
-        SimpleMatrix input = CSV.open(dataInURL);
-        SimpleMatrix output = CSV.open(dataOutURL);
-        SimpleMatrix in_test = CSV.open(testInURL);
-        SimpleMatrix out_test = CSV.open(testOutURL);
-
-        //ajustamos la desviación standard
         FilterConstantColumns filter = new FilterConstantColumns();
         filter.fit(input);//ajustamos el filtro
         System.out.println("Dimensiones iniciales");
@@ -72,66 +61,44 @@ public class MnistExample {
 
         STD std = new STD();
         std.fit(input);
-
-        //convertimos los datos
         input = std.eval(input);
         in_test = std.eval(in_test);
 
         int inputSize = input.numCols();
         int outputSize = output.numCols();
-
-        //================== /Preparación de los datos =========================
+        
         //==================== Preparamos la RNA =======================
-        //Preparamos el algoritmo de entrenamiento
-        String funcion = TransferFunction.TANSIG;
-        String funcionSalida = TransferFunction.SOFTMAX;
-
-        //Creamos la RNA
-        int NL1 = 300;
-        int NL2 = 150;
-        int NL100 = 100;
-
-        int seed = 1;
-        System.out.println("Seed:\t" + seed);
-        Random rand = new Random(seed);
-
+        Random rand = new Random(1);
         Feedforward net = new Feedforward();
-        net.addLayer(new Layer(inputSize, NL1, funcion, rand));
-        net.addLayer(new Layer(NL1, NL2, funcion, rand));
-        net.addLayer(new Layer(NL2, NL100, funcion, rand));
-//        net.addLayer(new Layer(NL100, NL100, funcion, rand));
-//        net.addLayer(new Layer(NL100, NL100, funcion, rand));
-        net.addLayer(new Layer(NL100, outputSize, funcionSalida, rand));
+        net.addLayer(new Layer(inputSize, 300, TransferFunction.TANSIG, rand));
+        net.addLayer(new Layer(300, 150, TransferFunction.TANSIG, rand));
+        net.addLayer(new Layer(150, outputSize, TransferFunction.SOFTMAX, rand));
 
         //=================  configuraciones del ensayo ========================
         // Preparamos el algoritmo de entrenamiento
-        Backpropagation sgdv = new Backpropagation();
-        sgdv.setEpoch(10);
-        sgdv.setBatchSize(10);
-        sgdv.setClassification(true);
-        sgdv.setMomentum(0.9);
-        sgdv.setLearningRate(0.01);
-        sgdv.setRegularization(1e-5);
-        sgdv.setInputTest(in_test);
-        sgdv.setOutputTest(out_test);
-        sgdv.setTestFrecuency(2000);
-        sgdv.setLossFunction(LossFunction.CROSSENTROPY);
+        Backpropagation bp = new Backpropagation();
+        bp.setEpoch(10);//10
+        bp.setBatchSize(0);//10
+        //bp.setMomentum(0.9);
+        bp.setLearningRate(0.01);
+        bp.setInputTest(in_test);
+        bp.setOutputTest(out_test);
+        bp.setTestFrecuency(2000);
+        bp.setClassification(true);
+        bp.setLossFunction(LossFunction.CROSSENTROPY);
         
-        sgdv.entrenar(net, input, output);
+        bp.entrenar(net, input, output);
         
         SimpleMatrix out1 = Compite.eval(net.outputAll(input));
-
-//        System.out.println("Tiempo red 1: " + time1 + " Tiempo red 2: " + time2 + " Tiempo red 3: " + time3);
         System.out.println("\nMatriz de Confusion 1 - Datos de entrenamiento");
-        ConfusionMatrix confusionMatrix1 = new ConfusionMatrix();
-        confusionMatrix1.eval(out1, output);
-        confusionMatrix1.printStats();
+        ConfusionMatrix cmTrain = new ConfusionMatrix();
+        cmTrain.eval(out1, output);
+        cmTrain.printStats();
 
         SimpleMatrix out2 = Compite.eval(net.outputAll(in_test));
-
         System.out.println("\nMatriz de Confusion 2 - Datos de Testeo");
-        ConfusionMatrix confusionMatrix2 = new ConfusionMatrix();
-        confusionMatrix2.eval(out2, out_test);
-        confusionMatrix2.printStats();
+        ConfusionMatrix cmTest = new ConfusionMatrix();
+        cmTest.eval(out2, out_test);
+        cmTest.printStats();
     }
 }
