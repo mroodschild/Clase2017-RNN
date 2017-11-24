@@ -78,12 +78,12 @@ public class MnistExample {
         // Preparamos el algoritmo de entrenamiento
         Backpropagation bp = new Backpropagation();
         bp.setEpoch(10);//10
-        bp.setBatchSize(0);//10
-        //bp.setMomentum(0.9);
+        bp.setBatchSize(10);//10
+        bp.setMomentum(0.9);
         bp.setLearningRate(0.01);
         bp.setInputTest(in_test);
         bp.setOutputTest(out_test);
-        //bp.setTestFrecuency(2000);
+        bp.setTestFrecuency(2000);
         bp.setClassification(true);
         bp.setLossFunction(LossFunction.CROSSENTROPY);
         
