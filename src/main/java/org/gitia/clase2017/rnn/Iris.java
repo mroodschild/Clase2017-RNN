@@ -32,13 +32,10 @@ public class Iris {
         Backpropagation bp = new Backpropagation();
 
         bp.setEpoch(1000);
-        bp.setLearningRate(0.01);
-        //bp.setMomentum(0.9);
+        bp.setMomentum(0.9);
         bp.setLossFunction(LossFunction.MSE);
 
         bp.entrenar(net, X, T);
-        
-        //net.outputAll(X).print();
         
         SimpleMatrix salidaNet = Compite.eval(net.outputAll(X));
 
