@@ -32,6 +32,7 @@ import org.gitia.froog.Feedforward;
 import org.gitia.froog.layer.Layer;
 import org.gitia.froog.lossfunction.LossFunction;
 import org.gitia.froog.trainingalgorithm.Backpropagation;
+import org.gitia.froog.trainingalgorithm.SGD;
 import org.gitia.froog.transferfunction.TransferFunction;
 import org.gitia.jdataanalysis.CSV;
 import org.gitia.jdataanalysis.data.stats.STD;
@@ -67,21 +68,21 @@ public class Funcion {
 
         //=================  configuraciones del ensayo ========================
         // Preparamos el algoritmo de entrenamiento
-        Backpropagation bp = new Backpropagation();
-        bp.setEpoch(13000);
-        bp.setMomentum(0.9);
-        bp.setLearningRate(0.01);
-        bp.setInputTest(in_test);
-        bp.setOutputTest(out_test);
-        bp.setTestFrecuency(1);
-        bp.setLossFunction(LossFunction.RMSE);
+        SGD sgd = new SGD();
+        sgd.setEpoch(13000);
+        sgd.setMomentum(0.9);
+        sgd.setLearningRate(0.01);
+        sgd.setInputTest(in_test.transpose());
+        sgd.setOutputTest(out_test.transpose());
+        sgd.setTestFrecuency(1);
+        sgd.setLossFunction(LossFunction.RMSE);
 
         input.printDimensions();
         output.printDimensions();
-        bp.entrenar(net, input, output);
+        sgd.train(net, input.transpose(), output.transpose());
 
         try {
-            net.outputAll(all_in).saveToFileCSV("src/main/resources/function/res_train.csv");
+            net.output(all_in.transpose()).saveToFileCSV("src/main/resources/function/res_train.csv");
         } catch (IOException ex) {
             Logger.getLogger(Funcion.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -32,6 +32,7 @@ import org.gitia.froog.lossfunction.LossFunction;
 import org.gitia.froog.statistics.Compite;
 import org.gitia.froog.statistics.ConfusionMatrix;
 import org.gitia.froog.trainingalgorithm.Backpropagation;
+import org.gitia.froog.trainingalgorithm.SGD;
 import org.gitia.froog.transferfunction.TransferFunction;
 import org.gitia.jdataanalysis.CSV;
 import org.gitia.jdataanalysis.data.stats.FilterConstantColumns;
@@ -76,29 +77,31 @@ public class MnistExample {
 
         //=================  configuraciones del ensayo ========================
         // Preparamos el algoritmo de entrenamiento
-        Backpropagation bp = new Backpropagation();
-        bp.setEpoch(10);//10
-        bp.setBatchSize(10);//10
-        bp.setMomentum(0.9);
-        bp.setLearningRate(0.01);
-        bp.setInputTest(in_test);
-        bp.setOutputTest(out_test);
-        bp.setTestFrecuency(2000);
-        bp.setClassification(true);
-        bp.setLossFunction(LossFunction.CROSSENTROPY);
+        SGD sgd = new SGD();
+        sgd.setEpoch(1);//10
+        sgd.setBatchSize(1000);//10
+        sgd.setMomentum(0.9);
+        sgd.setLearningRate(0.01);
+        sgd.setInputTest(in_test.transpose());
+        sgd.setOutputTest(out_test.transpose());
+        sgd.setTestFrecuency(2000);
+        sgd.setClassification(true);
+        sgd.setLossFunction(LossFunction.CROSSENTROPY);
         
-        bp.entrenar(net, input, output);
+        sgd.train(net, input.transpose(), output.transpose());
         
-        SimpleMatrix out1 = Compite.eval(net.outputAll(input));
+        SimpleMatrix out1 = Compite.eval(net.output(input.transpose()).transpose());
         System.out.println("\nMatriz de Confusion 1 - Datos de entrenamiento");
         ConfusionMatrix cmTrain = new ConfusionMatrix();
-        cmTrain.eval(out1, output);
+        out1.printDimensions();
+        output.printDimensions();
+        cmTrain.eval(out1, output.transpose());
         cmTrain.printStats();
 
-        SimpleMatrix out2 = Compite.eval(net.outputAll(in_test));
+        SimpleMatrix out2 = Compite.eval(net.output(in_test.transpose()).transpose());
         System.out.println("\nMatriz de Confusion 2 - Datos de Testeo");
         ConfusionMatrix cmTest = new ConfusionMatrix();
-        cmTest.eval(out2, out_test);
+        cmTest.eval(out2, out_test.transpose());
         cmTest.printStats();
     }
 }

@@ -22,8 +22,8 @@ import org.gitia.froog.transferfunction.TransferFunction;
 public class Iris {
     public static void main(String[] args) {
         
-        SimpleMatrix X = CSV.open("src/main/resources/iris/iris-in.csv");
-        SimpleMatrix T = CSV.open("src/main/resources/iris/iris-out.csv");
+        SimpleMatrix X = CSV.open("src/main/resources/iris/iris-in.csv").transpose();
+        SimpleMatrix T = CSV.open("src/main/resources/iris/iris-out.csv").transpose();
 
         Feedforward net = new Feedforward();
         net.addLayer(new Layer(4, 10, TransferFunction.TANSIG));
@@ -35,13 +35,13 @@ public class Iris {
         bp.setMomentum(0.9);
         bp.setLossFunction(LossFunction.MSE);
 
-        bp.entrenar(net, X, T);
+        bp.train(net, X, T);
         
-        SimpleMatrix salidaNet = Compite.eval(net.outputAll(X));
+        SimpleMatrix salidaNet = Compite.eval(net.output(X).transpose());
 
         System.out.println("\nMatriz de Confusion 1 - Datos de entrenamiento");
         ConfusionMatrix cmatrix = new ConfusionMatrix();
-        cmatrix.eval(salidaNet, T);
+        cmatrix.eval(salidaNet, T.transpose());
         cmatrix.printStats();
     }
 }

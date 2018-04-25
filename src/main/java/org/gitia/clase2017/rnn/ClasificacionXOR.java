@@ -20,31 +20,32 @@ import org.gitia.froog.transferfunction.TransferFunction;
 public class ClasificacionXOR {
 
     public static void main(String[] args) {
-        SimpleMatrix X = new SimpleMatrix(4, 2, true,
-                0, 0,
-                0, 1,
-                1, 0,
-                1, 1);
-
-        SimpleMatrix T = new SimpleMatrix(4, 1, true,
-                -1,
-                 1,
-                 1,
-                -1);
+        double[][] x = {
+            {0, 0},
+            {0, 1},
+            {1, 0},
+            {1, 1}};
+        double[][] t = {
+            {-1},
+            {1},
+            {1},
+            {-1}};
+        SimpleMatrix X = new SimpleMatrix(x);
+        SimpleMatrix T = new SimpleMatrix(t);
 
         Random seed = new Random(1);
         Feedforward net = new Feedforward();
-        net.addLayer(new Layer(2, 2, TransferFunction.TANSIG, seed));
-        net.addLayer(new Layer(2, 1, TransferFunction.TANSIG, seed));
-        
+        net.addLayer(new Layer(2, 3, TransferFunction.TANSIG, seed));
+        net.addLayer(new Layer(3, 1, TransferFunction.TANSIG, seed));
+
         Backpropagation bp = new Backpropagation();
         bp.setEpoch(200);
-        //bp.setMomentum(0.9);
+        bp.setMomentum(0.9);
         bp.setLearningRate(0.01);
         bp.setLossFunction(LossFunction.MSE);
 
-        bp.entrenar(net, X, T);
+        bp.train(net, X.transpose(), T.transpose());
 
-        net.outputAll(X).print();
+        net.output(X.transpose()).print();
     }
 }

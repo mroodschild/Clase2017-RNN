@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+ <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.gitia</groupId>
@@ -20,17 +20,17 @@
         <dependency>
             <groupId>com.github.mroodschild</groupId>
             <artifactId>froog</artifactId>
-            <version>v0.2</version>
+            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>com.github.mroodschild</groupId>
             <artifactId>JDataAnalysis</artifactId>
-            <version>0.2</version>
+            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>org.ejml</groupId>
-            <artifactId>all</artifactId>
-            <version>0.30</version>
+            <artifactId>ejml-all</artifactId>
+            <version>0.34</version>
         </dependency>
     </dependencies>
 </project>
